@@ -538,35 +538,6 @@ RESULT_HTML = """
 </html>
 """
 
-@app.route("/")
-def index():
-    return HTML
-
-@app.route("/detect", methods=["POST"])
-def detect_route():
-    file = request.files["image"]
-    name = f"{uuid.uuid4()}.jpg"
-    up = os.path.join(UPLOAD_FOLDER, name)
-    file.save(up)
-
-    svm_boxes, svm_img = detect(up, svm_predict)
-    cnn_boxes, cnn_img = detect(up, cnn_predict)
-
-    svm_out = f"svm_{name}"
-    cnn_out = f"cnn_{name}"
-
-    cv2.imwrite(os.path.join("static", svm_out), draw_boxes(svm_img, svm_boxes))
-    cv2.imwrite(os.path.join("static", cnn_out), draw_boxes(cnn_img, cnn_boxes))
-
-    return RESULT_HTML.format(svm_img=svm_out, cnn_img=cnn_out)
-
-# ======================================
-# Run
-# ======================================
-if __name__ == "__main__":
-    os.makedirs("static", exist_ok=True)
-    app.run(debug=True)
-
 
 @app.route("/")
 def index():
